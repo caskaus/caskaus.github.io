@@ -1,0 +1,83 @@
+ncfile = Dataset('directory/you/want/your/ncfile/sample_ncfile.nc',mode='w',format='NETCDF4_CLASSIC')
+//the above line creates a new NetCDF4 file in the directory mentioned
+//the flag 'w' recognises the writing mode in the format NETCDF4_CLASSIC
+
+//next task is to create some dimensions (lat,lon,x,y etc..)
+lat_dim = ncfile.createDimension('lat', 501)     # latitude axis
+lon_dim = ncfile.createDimension('lon', 481)    # longitude axis
+time_dim = ncfile.createDimension('time',366) # unlimited axis (can be appended to).
+for dim in ncfile.dimensions.items():
+    print(dim)
+#out:
+  ('lat', <class 'netCDF4._netCDF4.Dimension'>: name = 'lat', size = 501)
+  ('lon', <class 'netCDF4._netCDF4.Dimension'>: name = 'lon', size = 481)
+  ('time', <class 'netCDF4._netCDF4.Dimension'>: name = 'time', size = 366)
+
+//after we're done with creating dimensions, we go on to create Title and Subtitle for our sample_ncfile.nc
+ncfile.title='My model data'
+print(ncfile.title)
+#out:
+  My model data
+
+//create subtitle
+ncfile.subtitle="My model data subtitle"
+print(ncfile.subtitle)
+print(ncfile)
+#out:
+  My model data subtitle
+<class 'netCDF4._netCDF4.Dataset'>
+root group (NETCDF4_CLASSIC data model, file format HDF5):
+    title: My model data
+    subtitle: My model data subtitle
+    dimensions(sizes): lat(501), lon(481), time(366)
+    variables(dimensions): 
+    groups: 
+
+//now comes the main task. 
+//make sure to keep both the variable name and dimension name to be the same
+//eg: XXX =  ncfile.createVariable('XXX', np.float32, ('XXX',))
+//units and long names of variables can be prescribed as well
+lat = ncfile.createVariable('lat', np.float32, ('lat',))
+lat.units = 'degrees_north'
+lat.long_name = 'latitude'
+lon = ncfile.createVariable('lon', np.float32, ('lon',))
+lon.units = 'degrees_east'
+lon.long_name = 'longitude'
+time = ncfile.createVariable('time', np.float32, ('time',))
+time.units = 'days since 2020-01-01'
+time.long_name = 'time'
+
+//Define a 3D variable to hold the data
+lat_heat = ncfile.createVariable('lat_heat',np.float64,('time','lat','lon')) # note: unlimited dimension is leftmost
+lat_heat.units = 'W m**-2' # degrees Kelvin
+lat_heat.standard_name = 'Mean surface latent heat flux' # this is a CF standard name
+lw = ncfile.createVariable('lw',np.float64,('time','lat','lon')) # note: unlimited dimension is leftmost
+lw.units = 'W m**-2' # degrees Kelvin
+lw.standard_name = 'Mean surface net long-wave radiation flux' # this is a CF standard name
+nlats = len(lat_dim); nlons = len(lon_dim); ntimes = 366
+
+//Write latitudes, longitudes.
+//Note: the ":" is necessary in these "write" statements
+//HINT: lat[:] = -90. + (180./nlats)*np.arange(nlats) # south pole to north pole
+lat[:] = lat_array  #you can give a 1d numpy array as well
+//HINT: lon[:] = (180./nlats)*np.arange(nlons) # Greenwich meridian eastward
+lon[:] = lon_array  #you can give a 1d numpy array as well
+
+//create a 3D array of your required variable
+//HINT: time[:] = pd.date_range('2000-01-01', periods=365)  BE SURE WITH THE "dtype"
+time[:] = time_array #you can give a 1d numpy array as well
+data_arr = np.random.uniform(low=280,high=330,size=(ntimes,nlats,nlons))
+//Write the data.  This writes the whole 3D netCDF variable all at once.
+
+lat_heat[:,:,:] = lat_heat_correct  # Appends data along unlimited dimension
+lw[:,:,:] = l_w_correct  # Appends data along unlimited dimension
+
+print("-- Wrote data, lat_heat.shape is now ", lat_heat.shape)
+//read data back from variable (by slicing it), print min and max
+print("-- Min/Max values:", lat_heat[:,:,:].min(), lat_heat[:,:,:].max())
+#out:
+  -- Wrote data, lat_heat.shape is now  (366, 501, 481)
+  -- Min/Max values: 1.0949018001556396 1.713678240776062
+
+//that's it. We can close 
+ncfile.close()
