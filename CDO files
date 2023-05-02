@@ -1,0 +1,22 @@
+CDO commands that I use:
+
+1. CDO remapping the grid:
+  cdo -P 96 remapcon,gridfile.txt infile.nc outfile.nc
+  gridfile.txt:
+    gridtype  = lonlat
+    xsize     = 3600
+    ysize     = 1800
+    xfirst    = -180
+    xinc      = 0.0999999999999986
+    yfirst    = -90
+    yinc      = 0.0999999999999986
+    
+    
+ 2. CDO monthly climatology:
+    cdo -P 8 ymonmean infile.nc outfile.nc
+    
+ 3. CDO bottom value:
+    cdo -P 8 -select,name=pot_temp -bottomvalue infile.nc outfile.nc
+    
+ 4. CDO changename of variable (from 'temp' to 'pot_temp'):
+    cdo chname,temp,pot_temp infile.nc outfile.nc
