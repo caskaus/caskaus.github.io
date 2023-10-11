@@ -4,7 +4,8 @@
   
   ## Must do/FMS:
     go to /scratch/ds2/MOM6-examples folder:
-    ```mkdir -p build/gnu/shared/repro/
+    ```
+    mkdir -p build/gnu/shared/repro/
     cd  build/gnu/shared/repro/ 
     ../../../../src/mkmf/bin/list_paths -l ../../../../src/FMS
     ../../../../src/mkmf/bin/mkmf -t ../../../../src/mkmf/templates/theia-intel.mk -p libfms.a -c "-Duse_libMPI -Duse_netCDF" path_names
