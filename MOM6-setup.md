@@ -8,9 +8,7 @@
     mkdir -p build/gnu/shared/repro/
     cd  build/gnu/shared/repro/ 
     ../../../../src/mkmf/bin/list_paths -l ../../../../src/FMS
-    ../../../../src/mkmf/bin/mkmf -t ../../../../src/mkmf/templates/theia-intel.mk -p libfms.a -c "-Duse_libMPI -Duse_netCDF" path_names
-
-  
+    ../../../../src/mkmf/bin/mkmf -t ../../../../src/mkmf/templates/theia-intel.mk -p libfms.a -c "-Duse_libMPI -Duse_netCDF" path_names  
     make NETCDF=3 REPRO=1 FC=mpiifort CC=mpiicc LD=mpiifort libfms.a -j
     ```
     
